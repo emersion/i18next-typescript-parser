@@ -21,7 +21,7 @@ function parseKey(namespace: string, prefix: string | null, key: string): Key {
       namespace: key.substring(0, i),
       key: key.substring(i + 1),
     };
-  };
+  }
 
   if (prefix) {
     key = prefix + '.' + key;
