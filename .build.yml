@@ -1,0 +1,10 @@
+image: alpine/latest
+sources:
+  - https://github.com/emersion/i18next-typescript-parser.git
+packages:
+  - npm
+tasks:
+  - build: |
+      cd i18next-typescript-parser
+      npm clean-install
+      npm run build
