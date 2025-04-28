@@ -1,0 +1,36 @@
+{
+  "name": "i18next-typescript-parser",
+  "version": "0.1.0",
+  "description": "Extract i18next keys from TypeScript",
+  "keywords": [
+    "i18next",
+    "commandline"
+  ],
+  "homepage": "https://github.com/emersion/i18next-typescript-parser#readme",
+  "bugs": {
+    "url": "https://github.com/emersion/i18next-typescript-parser/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emersion/i18next-typescript-parser.git"
+  },
+  "license": "MIT",
+  "author": "Simon Ser <contact@emersion.fr>",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --declaration --outDir dist",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
