@@ -5,6 +5,10 @@ Extract [i18next] keys from a TypeScript codebase.
 Unlike [i18next-parser], this package operates on a typed syntax tree rather
 than lexer tokens. As a result, it's more reliable and precise.
 
+## Installation
+
+    npm install --save-dev i18next-typescript-parser
+
 ## Usage
 
 ```ts
