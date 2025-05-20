@@ -96,9 +96,14 @@ function visitCallExpression(
 
   // TFunction has between 1 and 3 function arguments: key, default value, and
   // options
+  if (node.arguments.length < 1 || node.arguments.length > 3) {
+    throw new I18nSyntaxError(file, node, 'expected between 1 and 3 function arguments for TFunction');
+  }
+
+  const keyNode = node.arguments[0]!;
+  const optionsNode = node.arguments.length > 1 ? node.arguments.at(-1) : undefined;
 
   // Extract the key from the first function argument
-  const keyNode = node.arguments[0]!;
   if (!ts.isStringLiteral(keyNode)) {
     return;
   }
@@ -106,7 +111,6 @@ function visitCallExpression(
 
   // Extract the default namespace from the options in the last function
   // argument
-  const optionsNode = node.arguments[1];
   if (optionsNode && ts.isObjectLiteralExpression(optionsNode)) {
     const optionsType = checker.getTypeAtLocation(optionsNode);
     const nsSymbol = optionsType.symbol.members?.get(ts.escapeLeadingUnderscores('ns'));
