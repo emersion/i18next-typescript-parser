@@ -2,6 +2,9 @@ import path from 'node:path';
 
 import * as ts from 'typescript';
 
+/**
+ * An i18n syntax error, with file and line position.
+ */
 class I18nSyntaxError extends Error {
   constructor(file: ts.SourceFile, node: ts.Node, msg: string) {
     const pos = file.getLineAndCharacterOfPosition(node.pos);
@@ -15,6 +18,7 @@ type Key = {
 };
 
 function parseKey(namespace: string, prefix: string | null, key: string): Key {
+  // If the key includes a namespace, it overrides the default one
   const i = key.indexOf(':');
   if (i >= 0) {
     return {
@@ -33,6 +37,10 @@ function keyToString({ namespace, key }: { namespace: string, key: string }) {
   return namespace + ':' + key;
 }
 
+/**
+ * Check whether a function call invokes a translation function, record the
+ * translation key if so.
+ */
 function visitCallExpression(
   checker: ts.TypeChecker,
   extractedKeys: Map<string, Key>,
@@ -44,12 +52,14 @@ function visitCallExpression(
     return;
   }
 
+  // Check whether a TFunction is being called
   const type = checker.getTypeOfSymbolAtLocation(symbol, node.expression);
   if (type.symbol?.escapedName !== 'TFunction') {
     return;
   }
   const typeArgs = checker.getTypeArguments(type as ts.TypeReference);
 
+  // TFunction has two generic type arguments: namespace and key prefix
   if (typeArgs.length !== 2) {
     throw new I18nSyntaxError(file, node, 'expected two generic type arguments for TFunction');
   }
@@ -60,6 +70,7 @@ function visitCallExpression(
   const namespaceType = typeArgs[0]!;
   const prefixType = typeArgs[1]!;
 
+  // Extract the default namespace from the first generic type argument
   let defaultNamespace;
   if (namespaceType.isStringLiteral()) {
     defaultNamespace = namespaceType.value;
@@ -73,6 +84,7 @@ function visitCallExpression(
     return;
   }
 
+  // Extract the key prefix from the second generic type argument
   let prefix;
   if (prefixType.isStringLiteral()) {
     prefix = prefixType.value;
@@ -82,12 +94,18 @@ function visitCallExpression(
     return;
   }
 
+  // TFunction has between 1 and 3 function arguments: key, default value, and
+  // options
+
+  // Extract the key from the first function argument
   const keyNode = node.arguments[0]!;
   if (!ts.isStringLiteral(keyNode)) {
     return;
   }
   let key = keyNode.text;
 
+  // Extract the default namespace from the options in the last function
+  // argument
   const optionsNode = node.arguments[1];
   if (optionsNode && ts.isObjectLiteralExpression(optionsNode)) {
     const optionsType = checker.getTypeAtLocation(optionsNode);
@@ -102,10 +120,14 @@ function visitCallExpression(
     }
   }
 
+  // Trim plural suffixes from the key
   const keyMetadata = parseKey(defaultNamespace, prefix, key.replace(/_(zero|one|other|many)$/, ''));
   extractedKeys.set(keyToString(keyMetadata), keyMetadata);
 }
 
+/**
+ * Recursively collect translation function calls inside a TypeScript AST node.
+ */
 function visitNode(
   checker: ts.TypeChecker,
   extractedKeys: Map<string, Key>,
