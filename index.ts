@@ -124,8 +124,7 @@ function visitCallExpression(
     }
   }
 
-  // Trim plural suffixes from the key
-  const keyMetadata = parseKey(defaultNamespace, prefix, key.replace(/_(zero|one|other|many)$/, ''));
+  const keyMetadata = parseKey(defaultNamespace, prefix, key);
   extractedKeys.set(keyToString(keyMetadata), keyMetadata);
 }
 
