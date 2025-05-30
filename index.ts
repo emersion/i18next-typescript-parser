@@ -104,10 +104,23 @@ function visitCallExpression(
   const optionsNode = node.arguments.length > 1 ? node.arguments.at(-1) : undefined;
 
   // Extract the key from the first function argument
-  if (!ts.isStringLiteral(keyNode)) {
-    return;
+  let keys;
+  if (ts.isStringLiteral(keyNode) || ts.isNoSubstitutionTemplateLiteral(keyNode)) {
+    keys = [keyNode.text];
+  } else {
+    const keyType = checker.getTypeAtLocation(keyNode);
+    if (!keyType.isUnion()) {
+      return;
+    }
+
+    keys = [];
+    for (const t of keyType.types) {
+      if (!t.isStringLiteral()) {
+        return;
+      }
+      keys.push(t.value);
+    }
   }
-  let key = keyNode.text;
 
   // Extract the default namespace from the options in the last function
   // argument
@@ -124,8 +137,10 @@ function visitCallExpression(
     }
   }
 
-  const keyMetadata = parseKey(defaultNamespace, prefix, key);
-  extractedKeys.set(keyToString(keyMetadata), keyMetadata);
+  for (const key of keys) {
+    const keyMetadata = parseKey(defaultNamespace, prefix, key);
+    extractedKeys.set(keyToString(keyMetadata), keyMetadata);
+  }
 }
 
 /**
