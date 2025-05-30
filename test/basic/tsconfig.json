@@ -1,9 +1,7 @@
 {
-  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "target": "esnext",
     "module": "nodenext",
-    "noEmit": true,
     "strict": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
@@ -19,7 +17,6 @@
     "checkJs": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "erasableSyntaxOnly": true,
-    "rewriteRelativeImportExtensions": true
+    "erasableSyntaxOnly": true
   }
 }
