@@ -15,9 +15,13 @@ class I18nSyntaxError extends Error {
 export type Key = {
   namespace: string;
   key: string;
+
+  // Filename and line number the extracted translation key comes from
+  sourceFilename: string;
+  sourceLine: number;
 };
 
-function parseKey(namespace: string, prefix: string | null, key: string): Key {
+function parseKey(namespace: string, prefix: string | null, key: string) {
   // If the key includes a namespace, it overrides the default one
   const i = key.indexOf(':');
   if (i >= 0) {
@@ -124,7 +128,12 @@ function visitCallExpression(
     }
   }
 
-  const keyMetadata = parseKey(defaultNamespace, prefix, key);
+  const pos = file.getLineAndCharacterOfPosition(node.pos);
+  const keyMetadata = {
+    ...parseKey(defaultNamespace, prefix, key),
+    sourceFilename: file.fileName,
+    sourceLine: pos.line + 1,
+  };
   extractedKeys.set(keyToString(keyMetadata), keyMetadata);
 }
 
