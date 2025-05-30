@@ -12,7 +12,7 @@ class I18nSyntaxError extends Error {
   }
 }
 
-type Key = {
+export type Key = {
   namespace: string;
   key: string;
 };
@@ -144,7 +144,7 @@ function visitNode(
   node.forEachChild((child) => visitNode(checker, extractedKeys, file, child));
 }
 
-export function extractKeys() {
+export function extractKeys(): Key[] {
   const tsconfigPath = ts.findConfigFile(process.cwd(), ts.sys.fileExists, 'tsconfig.json');
   if (!tsconfigPath) {
     throw new Error('Failed to find tsconfig.json');
