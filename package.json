@@ -1,6 +1,6 @@
 {
   "name": "i18next-typescript-parser",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Extract i18next keys from TypeScript",
   "keywords": [
     "i18next",
