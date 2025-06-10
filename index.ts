@@ -1,5 +1,5 @@
-import path from 'node:path';
-
+import { dirname } from 'node:path';
+import { fileURLToPath, URL } from 'node:url';
 import * as ts from 'typescript';
 
 /**
@@ -168,8 +168,37 @@ function visitNode(
   node.forEachChild((child) => visitNode(checker, extractedKeys, file, child));
 }
 
-export function extractKeys(): Key[] {
-  const tsconfigPath = ts.findConfigFile(process.cwd(), ts.sys.fileExists, 'tsconfig.json');
+/**
+ * Options for extracting i18n translation keys from a TypeScript project.
+ */
+export type ExtractKeysOptions = {
+  /**
+   * Optional path to the `tsconfig.json` file or directory to use for TypeScript project configuration.
+   */
+  tsconfigPath?: string | URL;
+}
+
+/**
+ * Extracts i18n translation keys from a TypeScript project.
+ *
+ * This function scans the TypeScript project specified by the given options (or the current working directory by default),
+ * analyzes the source files, and collects all translation keys used with the TFunction type.
+ *
+ * @param options - Configuration options for extracting translation keys, including an optional path to the `tsconfig.json`.
+ * @returns An array of extracted translation key metadata, including namespace, key, source filename, and source line.
+ * @throws If the `tsconfig.json` file cannot be found.
+ */
+export function extractKeys(options: ExtractKeysOptions = {}): Key[] {
+  let searchPath: string;
+  if (options.tsconfigPath && options.tsconfigPath instanceof URL) {
+    searchPath = fileURLToPath(options.tsconfigPath);
+  } else if (options.tsconfigPath) {
+    searchPath = options.tsconfigPath.toString();
+  } else {
+    searchPath = process.cwd();
+  }
+
+  const tsconfigPath = ts.findConfigFile(searchPath, ts.sys.fileExists, 'tsconfig.json');
   if (!tsconfigPath) {
     throw new Error('Failed to find tsconfig.json');
   }
@@ -177,7 +206,7 @@ export function extractKeys(): Key[] {
   const tsconfig = ts.parseJsonConfigFileContent(
     tsconfigFile.config,
     ts.sys,
-    path.dirname(tsconfigPath)
+    dirname(tsconfigPath)
   );
 
   const program = ts.createProgram({
