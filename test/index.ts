@@ -38,6 +38,10 @@ const expected = [
 ];
 
 process.chdir('test/basic');
-const keys = extractKeys().map(({ namespace, key }) => ({ namespace, key }));
+const keys = extractKeys().map(({ namespace, key, params }) => ({
+  namespace,
+  key,
+  params: params.size > 0 ? params : undefined,
+}));
 
 assert.deepStrictEqual(keys, expected);
