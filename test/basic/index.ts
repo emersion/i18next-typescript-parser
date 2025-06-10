@@ -1,6 +1,7 @@
 import { t, getFixedT } from 'i18next';
 
 t('simple');
+t('withParams', { foo: 42, bar: 'asdf' })
 t('withNoopOptions', { defaultValue: 'asdf' });
 t('withNsOptions', { ns: 'foo' });
 t('withDefaultValue', 'asdf');

@@ -19,6 +19,9 @@ export type Key = {
   // Filename and line number the extracted translation key comes from
   sourceFilename: string;
   sourceLine: number;
+
+  // Parameter names passed in
+  params: Set<string>;
 };
 
 function parseKey(namespace: string, prefix: string | null, key: string) {
@@ -126,8 +129,9 @@ function visitCallExpression(
     }
   }
 
-  // Extract the default namespace and key prefix from the options in the last
-  // function argument
+  // Extract parameters, default namespace and key prefix from the options in
+  // the last function argument
+  let params = new Set<string>();
   if (optionsNode && ts.isObjectLiteralExpression(optionsNode)) {
     const optionsType = checker.getTypeAtLocation(optionsNode);
     const nsSymbol = optionsType.symbol.members?.get(ts.escapeLeadingUnderscores('ns'));
@@ -154,6 +158,11 @@ function visitCallExpression(
     ) {
       prefix = keyPrefixSymbol.valueDeclaration.initializer.text;
     }
+
+    if (optionsType.symbol.members) {
+      const identifiers = [...optionsType.symbol.members.keys()];
+      params = new Set(identifiers.map(ts.unescapeLeadingUnderscores));
+    }
   }
 
   const pos = file.getLineAndCharacterOfPosition(node.pos);
@@ -162,6 +171,7 @@ function visitCallExpression(
       ...parseKey(defaultNamespace, prefix, key),
       sourceFilename: file.fileName,
       sourceLine: pos.line + 1,
+      params,
     };
     extractedKeys.set(keyToString(keyMetadata), keyMetadata);
   }

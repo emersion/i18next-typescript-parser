@@ -4,21 +4,22 @@ import { extractKeys } from '../index.ts';
 
 const expected = [
   { namespace: 'translation', key: 'simple' },
-  { namespace: 'translation', key: 'withNoopOptions' },
-  { namespace: 'foo', key: 'withNsOptions' },
+  { namespace: 'translation', key: 'withParams', params: new Set(['foo', 'bar']) },
+  { namespace: 'translation', key: 'withNoopOptions', params: new Set(['defaultValue']) },
+  { namespace: 'foo', key: 'withNsOptions', params: new Set(['ns']) },
   { namespace: 'translation', key: 'withDefaultValue' },
-  { namespace: 'translation', key: 'withDefaultValueAndNoopOptions' },
-  { namespace: 'foo', key: 'withDefaultValueAndNsOptions' },
+  { namespace: 'translation', key: 'withDefaultValueAndNoopOptions', params: new Set(['count']) },
+  { namespace: 'foo', key: 'withDefaultValueAndNsOptions', params: new Set(['ns']) },
   { namespace: 'foo', key: 'overrideNs' },
   { namespace: 'translation', key: 'templateWithoutSubstitution' },
 
   { namespace: 'custom', key: 'bar.simple' },
-  { namespace: 'customFoo', key: 'bar.withNsOptions' },
+  { namespace: 'customFoo', key: 'bar.withNsOptions', params: new Set(['ns']) },
   { namespace: 'customFoo', key: 'overrideNs' },
-  { namespace: 'customFoo', key: 'baz.withNsAndKeyPrefixOptions' },
+  { namespace: 'customFoo', key: 'baz.withNsAndKeyPrefixOptions', params: new Set(['keyPrefix', 'ns']) },
 
   { namespace: 'multipleNs', key: 'simple' },
-  { namespace: 'multipleNsFoo', key: 'withNsOptions' },
+  { namespace: 'multipleNsFoo', key: 'withNsOptions', params: new Set(['ns']) },
   { namespace: 'multipleNsFoo', key: 'overrideNs' },
 
   { namespace: 'translation', key: 'union.bar' },
@@ -39,6 +40,10 @@ const expected = [
 
 const keys = extractKeys({
   tsconfigPath: new URL(import.meta.resolve('./basic')),
-}).map(({ namespace, key }) => ({ namespace, key }));
+}).map(({ namespace, key, params }) => ({
+  namespace,
+  key,
+  ...(params.size > 0 && { params }),
+}));
 
 assert.deepStrictEqual(keys, expected);
