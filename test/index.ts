@@ -16,6 +16,7 @@ const expected = [
   { namespace: 'custom', key: 'bar.simple' },
   { namespace: 'customFoo', key: 'bar.withNsOptions' },
   { namespace: 'customFoo', key: 'overrideNs' },
+  { namespace: 'customFoo', key: 'baz.withNsAndKeyPrefixOptions' },
 
   { namespace: 'multipleNs', key: 'simple' },
   { namespace: 'multipleNsFoo', key: 'withNsOptions' },

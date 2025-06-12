@@ -13,6 +13,7 @@ const customT = getFixedT(null, 'custom', 'bar');
 customT('simple');
 customT('withNsOptions', { ns: 'customFoo' });
 customT('customFoo:overrideNs');
+customT('withNsAndKeyPrefixOptions', { ns: 'customFoo', keyPrefix: 'baz' });
 
 const multipleNsT = getFixedT(null, ['multipleNs', 'multipleNsFoo'] as const);
 multipleNsT('simple');
