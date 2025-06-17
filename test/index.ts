@@ -5,11 +5,11 @@ import { extractKeys } from '../index.ts';
 
 const expected = [
   { namespace: 'translation', key: 'simple' },
-  { namespace: 'translation', key: 'withNoopOptions' },
+  { namespace: 'translation', key: 'withDefaultValueOptions', hasDefaultValue: true },
   { namespace: 'foo', key: 'withNsOptions' },
-  { namespace: 'translation', key: 'withDefaultValue' },
-  { namespace: 'translation', key: 'withDefaultValueAndNoopOptions' },
-  { namespace: 'foo', key: 'withDefaultValueAndNsOptions' },
+  { namespace: 'translation', key: 'withDefaultValue', hasDefaultValue: true },
+  { namespace: 'translation', key: 'withDefaultValueAndNoopOptions', hasDefaultValue: true },
+  { namespace: 'foo', key: 'withDefaultValueAndNsOptions', hasDefaultValue: true },
   { namespace: 'foo', key: 'overrideNs' },
   { namespace: 'translation', key: 'templateWithoutSubstitution' },
 
@@ -39,6 +39,10 @@ const expected = [
 ];
 
 process.chdir('test/basic');
-const keys = extractKeys().map(({ namespace, key }) => ({ namespace, key }));
+const keys = extractKeys().map(({ namespace, key, hasDefaultValue }) => ({
+  namespace,
+  key,
+  ...(hasDefaultValue && { hasDefaultValue }),
+}));
 
 assert.deepStrictEqual(keys, expected);
