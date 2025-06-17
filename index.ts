@@ -19,6 +19,9 @@ export type Key = {
   // Filename and line number the extracted translation key comes from
   sourceFilename: string;
   sourceLine: number;
+
+  // Whether a default value is provided for missing translations
+  hasDefaultValue: boolean;
 };
 
 function parseKey(namespace: string, prefix: string | null, key: string) {
@@ -106,6 +109,7 @@ function visitCallExpression(
 
   const keyNode = node.arguments[0]!;
   const optionsNode = node.arguments.length > 1 ? node.arguments.at(-1) : undefined;
+  let hasDefaultValue = node.arguments.length > 2;
 
   // Extract key(s) from the first function argument
   let keys;
@@ -130,6 +134,7 @@ function visitCallExpression(
   // function argument
   if (optionsNode && ts.isObjectLiteralExpression(optionsNode)) {
     const optionsType = checker.getTypeAtLocation(optionsNode);
+
     const nsSymbol = optionsType.symbol.members?.get(ts.escapeLeadingUnderscores('ns'));
     if (
       nsSymbol &&
@@ -154,6 +159,22 @@ function visitCallExpression(
     ) {
       prefix = keyPrefixSymbol.valueDeclaration.initializer.text;
     }
+
+    const defaultValueSymbol = optionsType.symbol.members?.get(
+      ts.escapeLeadingUnderscores('defaultValue')
+    );
+    if (
+      defaultValueSymbol &&
+      defaultValueSymbol.valueDeclaration &&
+      ts.isPropertyAssignment(defaultValueSymbol.valueDeclaration)
+    ) {
+      hasDefaultValue = true;
+    }
+  }
+
+  // TODO: check the type instead
+  if (optionsNode && ts.isStringLiteral(optionsNode)) {
+    hasDefaultValue = true;
   }
 
   const pos = file.getLineAndCharacterOfPosition(node.pos);
@@ -162,6 +183,7 @@ function visitCallExpression(
       ...parseKey(defaultNamespace, prefix, key),
       sourceFilename: file.fileName,
       sourceLine: pos.line + 1,
+      hasDefaultValue,
     };
     extractedKeys.set(keyToString(keyMetadata), keyMetadata);
   }
