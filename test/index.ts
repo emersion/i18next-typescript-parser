@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import process from 'node:process';
 
 import { extractKeys } from '../index.ts';
 
@@ -38,7 +37,8 @@ const expected = [
   { namespace: 'translation', key: 'ternary.baz' },
 ];
 
-process.chdir('test/basic');
-const keys = extractKeys().map(({ namespace, key }) => ({ namespace, key }));
+const keys = extractKeys({
+  tsconfigPath: new URL(import.meta.resolve('./basic')),
+}).map(({ namespace, key }) => ({ namespace, key }));
 
 assert.deepStrictEqual(keys, expected);
