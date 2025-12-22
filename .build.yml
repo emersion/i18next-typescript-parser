@@ -10,7 +10,4 @@ tasks:
       npm run build
   - test: |
       cd i18next-typescript-parser
-      # TODO: use `npm run test` once this is resolved:
-      # https://gitlab.alpinelinux.org/alpine/aports/-/issues/17073
-      npx tsc
-      npx tsx test/index.ts
+      npm run test
