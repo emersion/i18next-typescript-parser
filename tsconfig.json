@@ -20,6 +20,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "erasableSyntaxOnly": true,
-    "rewriteRelativeImportExtensions": true
+    "rewriteRelativeImportExtensions": true,
+    "types": ["node"]
   }
 }
