@@ -8,6 +8,8 @@ t('withDefaultValueAndNoopOptions', 'asdf', { count: 42 });
 t('withDefaultValueAndNsOptions', 'asdf', { ns: 'foo' });
 t('foo:overrideNs');
 t(`templateWithoutSubstitution`);
+const stringLiteral = 'Substitution' as const;
+t(`templateWithTrivial${stringLiteral}`);
 
 const customT = getFixedT(null, 'custom', 'bar');
 customT('simple');

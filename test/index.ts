@@ -11,6 +11,7 @@ const expected = [
   { namespace: 'foo', key: 'withDefaultValueAndNsOptions' },
   { namespace: 'foo', key: 'overrideNs' },
   { namespace: 'translation', key: 'templateWithoutSubstitution' },
+  { namespace: 'translation', key: 'templateWithTrivialSubstitution' },
 
   { namespace: 'custom', key: 'bar.simple' },
   { namespace: 'customFoo', key: 'bar.withNsOptions' },
